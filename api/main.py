@@ -1,12 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+
+from . import settings
 
 app = FastAPI()
 
 
 @app.get("/", response_class=HTMLResponse)
-async def homepage():
-    return f"<h1>Hello, world!</h1>"
+async def homepage(request: Request):
+    return settings.TEMPLATES.TemplateResponse("homepage.html", {"request": request})
 
 
 @app.get("/hello/{name}")
