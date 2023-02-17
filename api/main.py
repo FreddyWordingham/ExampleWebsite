@@ -1,11 +1,12 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def homepage():
-    return f"Hello, world!"
+    return f"<h1>Hello, world!</h1>"
 
 
 @app.get("/hello/{name}")
