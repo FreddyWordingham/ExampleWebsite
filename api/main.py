@@ -1,9 +1,13 @@
 from fastapi import FastAPI
-import datetime
 
 app = FastAPI()
 
+
 @app.get("/")
-def homepage():
-    time = datetime.datetime.now()
-    return f"The time is {time}"
+async def homepage():
+    return f"Hello, world!"
+
+
+@app.get("/hello/{name}")
+async def hello_name(name: str):
+    return f"Hello, {name}!"
