@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+import mandybrot as mandy
 
 from . import settings
 
@@ -31,9 +32,33 @@ async def hello_name(name: str):
 
 
 class SampleInput(BaseModel):
-    x: int
+    real: float
+    imag: float
 
 
 @app.post("/sample")
 async def sample(input: SampleInput):
-    return input.x**2
+    c = input.real + input.imag * 1j
+    max_iters = 100
+    return mandy.sample(c, max_iters)
+
+
+class ImageInput(BaseModel):
+    real: float
+    imag: float
+    width: int
+    height: int
+    zoom: float
+    max_iter: int
+
+
+@app.post("/image")
+async def image(input: ImageInput):
+    data = mandy.sample.area(
+        input.real, input.imag, input.width, input.height, input.zoom, input.max_iter
+    )
+    cols = mandy.colour.image(data, input.max_iter, mandy.colour.jet_map)
+    img = mandy.colour.encode(cols)
+    img.save("static/mandy.png")
+
+    return "Done"
